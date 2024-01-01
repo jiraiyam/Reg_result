@@ -4,6 +4,5 @@ numpy
 matplotlib
 seaborn
 scipy
-math
 sklearn
 plotly
