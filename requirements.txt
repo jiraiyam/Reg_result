@@ -4,6 +4,6 @@ numpy
 matplotlib
 seaborn
 scipy
-math==0.0.1
+math
 sklearn
 plotly
