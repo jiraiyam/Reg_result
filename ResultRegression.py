@@ -7,8 +7,9 @@ import scipy.stats as stats
 import math
 from sklearn import metrics
 import plotly.express as px
-# Sidebar
-st.sidebar.title("Upload Data")
+
+
+#st.sidebar.title("Upload Data")
 result_file = st.sidebar.file_uploader("Upload Result Data (Excel file)", type=["xlsx"])
 prediction_file = st.sidebar.file_uploader("Upload Prediction Data (Excel file)", type=["xlsx"])
 
@@ -16,24 +17,28 @@ prediction_file = st.sidebar.file_uploader("Upload Prediction Data (Excel file)"
 st.title("Regression Model Analysis")
 
 # Check if files are uploaded
-if result_file is not None and prediction_file is not None:
+if result_file is not None or prediction_file is not None:
     # Load Data
-    result = pd.read_excel(result_file)
-    prediction = pd.read_excel(prediction_file)
+    result = None
+    prediction = None
 
-    if result.columns[0]=="Unnamed: 0":
-        result.drop(["Unnamed: 0"], axis=1, inplace=True)
+    if result_file is not None:
+        result = pd.read_excel(result_file)
+        if result.columns[0] == "Unnamed: 0":
+            result.drop(["Unnamed: 0"], axis=1, inplace=True)
+        result.drop(["Fitted Time"], axis=1, inplace=True)
+        result = result.set_index(" Models")
 
-
-    # Drop "Fitted Time" column
-    result.drop(["Fitted Time"], axis=1, inplace=True)
-    result = result.set_index(" Models")
+    if prediction_file is not None:
+        prediction = pd.read_excel(prediction_file)
 
     # Sidebar
     st.sidebar.title("Select Visualization")
     visualization_choice = st.sidebar.selectbox(
         "Choose a visualization",
-        ["Q-Q Plot", "Heatmap", "Mean Performance Metrics", "Radar Plot", "Parallel Coordinates", "Scatter Matrix", "Scatter Plot", "Box Plot", "Violin Plot", "Residual Plot", "MSE Comparison", "Parallel Coordinates (Plotly)", "Correlation Heatmap", "R2 Polar Plot"]
+        ["Q-Q Plot", "Heatmap", "Mean Performance Metrics", "Radar Plot", "Parallel Coordinates", "Scatter Matrix",
+         "Scatter Plot", "Box Plot", "Violin Plot", "Residual Plot", "MSE Comparison", "Parallel Coordinates (Plotly)",
+         "Correlation Heatmap", "R2 Polar Plot"]
     )
 
     # Plot Functions
@@ -217,33 +222,47 @@ if result_file is not None and prediction_file is not None:
 
     # Choose the plot based on the user's selection
     if visualization_choice == "Q-Q Plot":
-        plot_qq_plots(result)
+        if result is not None:
+            plot_qq_plots(result)
     elif visualization_choice == "Heatmap":
-        plot_heatmap(result)
+        if result is not None:
+            plot_heatmap(result)
     elif visualization_choice == "Mean Performance Metrics":
-        plot_mean_performance_metrics(result)
+        if result is not None:
+            plot_mean_performance_metrics(result)
     elif visualization_choice == "Radar Plot":
-        plot_radar_plot(result)
+        if result is not None:
+            plot_radar_plot(result)
     elif visualization_choice == "Parallel Coordinates":
-        plot_parallel_coordinates(result)
+        if result is not None:
+            plot_parallel_coordinates(result)
     elif visualization_choice == "Scatter Matrix":
-        plot_scatter_matrix(result)
+        if result is not None:
+            plot_scatter_matrix(result)
     elif visualization_choice == "Scatter Plot":
-        plot_scatter_plot(prediction)
+        if prediction is not None:
+            plot_scatter_plot(prediction)
     elif visualization_choice == "Box Plot":
-        plot_box_plot(prediction)
+        if prediction is not None:
+            plot_box_plot(prediction)
     elif visualization_choice == "Violin Plot":
-        plot_violin_plot(prediction)
+        if prediction is not None:
+            plot_violin_plot(prediction)
     elif visualization_choice == "Residual Plot":
-        plot_residual_plot(prediction)
+        if prediction is not None:
+            plot_residual_plot(prediction)
     elif visualization_choice == "MSE Comparison":
-        plot_mse_comparison(result)
+        if result is not None:
+            plot_mse_comparison(result)
     elif visualization_choice == "Parallel Coordinates (Plotly)":
-        plot_parallel_coordinates_plotly(result)
+        if result is not None:
+            plot_parallel_coordinates_plotly(result)
     elif visualization_choice == "Correlation Heatmap":
-        plot_correlation_heatmap(prediction)
+        if prediction is not None:
+            plot_correlation_heatmap(prediction)
     elif visualization_choice == "R2 Polar Plot":
-        plot_r2_polar_plot(prediction)
+        if prediction is not None:
+            plot_r2_polar_plot(prediction)
 
 
 else:
