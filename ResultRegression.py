@@ -71,7 +71,8 @@ if result_file is not None and prediction_file is not None:
         for model in result.index:
             values = normalized_metrics.loc[model].tolist()
             values += values[:1]
-            angles = [n / float(len(result.columns)) * 2 * math.pi for n in range(len(result.columns))]
+            angles = [n / float(len(result.columns)) * 2 * np.pi for n in
+                      range(len(result.columns))]  # Replace math.pi with np.pi
             angles += angles[:1]
             ax.plot(angles, values, label=model)
         ax.set_title('Radar Plot of Performance Metrics')
