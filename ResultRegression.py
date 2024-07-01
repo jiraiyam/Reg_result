@@ -7,6 +7,13 @@ import scipy.stats as stats
 import math
 from sklearn import metrics
 import plotly.express as px
+from pylab import rcParams
+
+rcParams["figure.figsize"]=(30,18)
+plt.rcParams['figure.dpi'] = 300
+plt.rcParams['font.family'] = 'Arial'
+plt.rcParams['font.weight'] = 'bold'
+plt.rcParams['font.size'] = 15
 
 
 #st.sidebar.title("Upload Data")
