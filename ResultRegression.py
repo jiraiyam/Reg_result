@@ -4,18 +4,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import scipy.stats as stats
-import math
 from sklearn import metrics
 import plotly.express as px
 from pylab import rcParams
+
 
 rcParams["figure.figsize"]=(30,18)
 plt.rcParams['figure.dpi'] = 300
 plt.rcParams['font.family'] = 'Arial'
 plt.rcParams['font.weight'] = 'bold'
 plt.rcParams['font.size'] = 15
-
-
 #st.sidebar.title("Upload Data")
 result_file = st.sidebar.file_uploader("Upload Result Data (Excel file)", type=["xlsx"])
 prediction_file = st.sidebar.file_uploader("Upload Prediction Data (Excel file)", type=["xlsx"])
@@ -43,26 +41,56 @@ if result_file is not None or prediction_file is not None:
     st.sidebar.title("Select Visualization")
     visualization_choice = st.sidebar.selectbox(
         "Choose a visualization",
-        ["Q-Q Plot", "Heatmap", "Mean Performance Metrics", "Radar Plot", "Parallel Coordinates", "Scatter Matrix",
-         "Scatter Plot", "Box Plot", "Violin Plot", "Residual Plot", "MSE Comparison", "Parallel Coordinates (Plotly)",
-         "Correlation Heatmap", "R2 Polar Plot"]
+        [
+            "Q-Q Plot",
+            "Heatmap",
+            "Mean Performance Metrics",
+            "Radar Plot",
+            "Parallel Coordinates",
+            "Scatter Matrix",
+            "Scatter Plot",
+            "Box Plot",
+            "Violin Plot",
+            "Residual Plot",
+            "MSE Comparison",
+            "Parallel Coordinates (Plotly)",
+            "Correlation Heatmap",
+            "R2 Polar Plot",
+            "Pairplot with Hue",
+            "Distribution Plot for Each Metric",
+            "Jointplot of Model Predictions vs. Original Values",
+            "Density Contour Plot of Two Metrics",
+            "3D Scatter Plot of Three Metrics",
+            "Histogram with Marginal KDE",
+            "PairGrid with Regression Fits",
+            "Clustermap for Metric Correlation",
+            "Error Bar Plot of Mean Performance Metrics",
+            "Scatter Plot Matrix with Regression Fits"
+        ]
     )
+
 
     # Plot Functions
     def plot_qq_plots(result):
         st.subheader("Q-Q Plot")
-        for metric in result.columns:
-            st.subheader(f"{metric.upper()}")
-            fig = plt.figure(figsize=(6, 4))
-            stats.probplot(result[metric], dist="norm", plot=plt)
-            st.pyplot(fig)
+        num_metrics = len(result.columns)
+        fig, axes = plt.subplots(nrows=3, ncols=3, figsize=(18, 18))
+
+        for i in range(3):
+            for j in range(3):
+                if i * 3 + j < num_metrics:
+                    metric = result.columns[i * 3 + j]
+                    stats.probplot(result[metric], dist="norm", plot=axes[i, j])
+                    axes[i, j].set_title(f"Q-Q Plot for {metric}")
+
+        fig.tight_layout()
+        st.pyplot(fig)
 
     def plot_heatmap(result):
         st.subheader("Performance Metric Comparison (Heatmap)")
         fig, ax = plt.subplots(figsize=(8, 6))
         sns.heatmap(result, annot=True, fmt=".2f", cmap="YlGnBu", ax=ax)
         st.pyplot(fig)
-
 
     def plot_mean_performance_metrics(result):
         st.subheader("Mean Performance Metrics with Error Bars")
@@ -75,7 +103,6 @@ if result_file is not None or prediction_file is not None:
         ax.set_title('Mean Performance Metrics with Error Bars')
         st.pyplot(fig)
 
-
     def plot_radar_plot(result):
         st.subheader("Radar Plot of Performance Metrics")
         normalized_metrics = (result - result.min()) / (result.max() - result.min())
@@ -83,32 +110,24 @@ if result_file is not None or prediction_file is not None:
         for model in result.index:
             values = normalized_metrics.loc[model].tolist()
             values += values[:1]
-            angles = [n / float(len(result.columns)) * 2 * np.pi for n in
-                      range(len(result.columns))]  # Replace math.pi with np.pi
+            angles = [n / float(len(result.columns)) * 2 * np.pi for n in range(len(result.columns))]
             angles += angles[:1]
             ax.plot(angles, values, label=model)
         ax.set_title('Radar Plot of Performance Metrics')
         ax.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1))
         st.pyplot(fig)
 
-
     def plot_parallel_coordinates(result):
         st.subheader("Parallel Coordinates Plot of Model Comparison")
         fig, ax = plt.subplots(figsize=(10, 6))
-
-        # Reverse the order of x-axis labels
         reversed_models = result.index[::-1]
-        pd.plotting.parallel_coordinates(result.loc[reversed_models].reset_index(), ' Models', colormap='viridis',
-                                         ax=ax)
-
+        pd.plotting.parallel_coordinates(result.loc[reversed_models].reset_index(), ' Models', colormap='viridis', ax=ax)
         ax.set_xlabel('Metrics')
         ax.set_ylabel('Metric Values')
         ax.set_title('Parallel Coordinates Plot of Model Comparison')
         ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
         ax.legend(loc='center left', bbox_to_anchor=(1.0, 0.9), title='Models', fontsize=8)
-
         st.pyplot(fig)
-
 
     def plot_scatter_matrix(result):
         st.subheader("Scatter Matrix Plot of Model Comparison")
@@ -117,7 +136,6 @@ if result_file is not None or prediction_file is not None:
         fig.suptitle('Scatter Matrix Plot of Model Comparison', y=1.02)
         fig.tight_layout(h_pad=0.5, w_pad=0.5)
         st.pyplot(fig)
-
 
     def plot_scatter_plot(prediction):
         st.subheader("Scatter Plot of Model Predictions vs. Original Values")
@@ -128,10 +146,9 @@ if result_file is not None or prediction_file is not None:
         ax.set_xlabel('Original Values')
         ax.set_ylabel('Predicted Values')
         ax.set_title('Scatter Plot of Model Predictions vs. Original Values')
-        ax.legend()
+        ax.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1))
         ax.grid()
         st.pyplot(fig)
-
 
     def plot_box_plot(prediction):
         st.subheader("Box Plot of Prediction Errors for Each Model")
@@ -143,7 +160,6 @@ if result_file is not None or prediction_file is not None:
         ax.set_title('Box Plot of Prediction Errors for Each Model')
         ax.grid()
         st.pyplot(fig)
-
 
     def plot_violin_plot(prediction):
         st.subheader("Violin Plot of Prediction Errors for Each Model")
@@ -157,7 +173,6 @@ if result_file is not None or prediction_file is not None:
         ax.grid()
         st.pyplot(fig)
 
-
     def plot_residual_plot(prediction):
         st.subheader("Residual Plot of Model Predictions")
         fig, ax = plt.subplots(figsize=(15, 8))
@@ -169,10 +184,9 @@ if result_file is not None or prediction_file is not None:
         ax.set_xlabel('Data Points')
         ax.set_ylabel('Residuals')
         ax.set_title('Residual Plot of Model Predictions')
-        ax.legend()
+        ax.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1))
         ax.grid()
         st.pyplot(fig)
-
 
     def plot_mse_comparison(result):
         st.subheader("Mean Squared Error (MSE) Comparison")
@@ -183,24 +197,18 @@ if result_file is not None or prediction_file is not None:
         ax.set_ylabel('Models')
         st.pyplot(fig)
 
-
     def plot_parallel_coordinates_plotly(result):
         st.subheader("Parallel Coordinates Plot of Regression Metrics by Model (Plotly)")
         fig = px.parallel_coordinates(result.reset_index(), color="R2", dimensions=list(result.columns),
                                       labels={'index': result.index.name},
                                       color_continuous_scale=px.colors.sequential.Viridis,
                                       title='Parallel Coordinates Plot of Regression Metrics by Model')
-
-        # Update layout to set background color to white
         fig.update_layout(
             title_font=dict(family="Arial", size=20),
             font=dict(family="Arial", size=15),
             plot_bgcolor='white',
         )
-
-
         st.plotly_chart(fig)
-
 
     def plot_correlation_heatmap(prediction):
         st.subheader("Correlation Heatmap of Predicted Values by Model")
@@ -212,20 +220,107 @@ if result_file is not None or prediction_file is not None:
 
     def plot_r2_polar_plot(prediction):
         st.subheader("R2 Polar Plot")
+        fig, ax = plt.subplots(figsize=(8, 8), subplot_kw={'projection': 'polar'})
+
         for model in prediction.columns[:-1]:
             mse = metrics.mean_squared_error(prediction[prediction.columns[-1]], prediction[model])
             rmse = np.sqrt(mse)
             r2 = metrics.r2_score(prediction[prediction.columns[-1]], prediction[model])
-            fig, ax = plt.subplots(figsize=(8, 8), subplot_kw={'projection': 'polar'})
-            ax.scatter(np.arccos(r2), np.sqrt(mse), s=30, c='red', label='Prediction')
-            ax.set_title(model)
-            ax.legend()
-            st.pyplot(fig)
+
+            ax.scatter(np.arccos(r2), np.sqrt(mse), s=30, label=model)
+
+        ax.set_title("R2 Polar Plot")
+        ax.legend(loc='upper left', bbox_to_anchor=(1.1, 1.1))  # Place legend outside the plot
+        st.pyplot(fig)
+    def plot_pairplot(result):
+        st.subheader("Pairplot with Hue")
+        fig = sns.pairplot(result,  palette='viridis')
+        st.pyplot(fig)
 
 
+    def plot_distplot(result):
+        st.subheader("Distribution Plot for Each Metric")
+        fig, axes = plt.subplots(nrows=3, ncols=3, figsize=(18, 18))
+        metrics = result.columns
+        for i, metric in enumerate(metrics):
+            row = i // 3
+            col = i % 3
+            sns.histplot(result[metric], kde=True, ax=axes[row, col])
+            axes[row, col].set_title(f"Distribution of {metric}")
+        fig.tight_layout()
+        st.pyplot(fig)
 
 
-    # ... (rest of the plot functions remain the same)
+    def plot_jointplot(prediction):
+        st.subheader("Jointplot of Model Predictions vs. Original Values")
+        fig = sns.jointplot(x='Original', y=prediction.columns[1], data=prediction, kind='reg', height=8)
+        st.pyplot(fig)
+
+
+    def plot_density_contour(result):
+        st.subheader("Density Contour Plot of Two Metrics")
+        fig = px.density_contour(result, x=result.columns[0], y=result.columns[1], marginal_x="histogram",
+                                 marginal_y="histogram")
+        st.plotly_chart(fig)
+
+
+    def plot_3d_scatter(result):
+        st.subheader("3D Scatter Plot of Three Metrics")
+        # Remove any leading or trailing spaces from column names
+        result.columns = result.columns.str.strip()
+        fig = px.scatter_3d(result, x=result.columns[0], y=result.columns[1], z=result.columns[2])
+        st.plotly_chart(fig)
+
+
+    def plot_histogram_kde(result):
+        st.subheader("Histogram with Marginal KDE")
+        fig, axes = plt.subplots(nrows=len(result.columns), ncols=len(result.columns))
+        for i, col1 in enumerate(result.columns):
+            for j, col2 in enumerate(result.columns):
+                if i == j:
+                    sns.histplot(result[col1], kde=True, ax=axes[i, j])
+                else:
+                    sns.scatterplot(x=result[col1], y=result[col2], ax=axes[i, j])
+        fig.tight_layout()
+        st.pyplot(fig)
+
+
+    def plot_pairgrid(result):
+        st.subheader("PairGrid with Regression Fits")
+        g = sns.PairGrid(result)
+        g.map_upper(sns.scatterplot)
+        g.map_lower(sns.kdeplot, cmap="Blues_d")
+        g.map_diag(sns.histplot, kde=True)
+        g.map_lower(sns.regplot)
+        st.pyplot(g)
+
+
+    def plot_clustermap(result):
+        st.subheader("Clustermap for Metric Correlation")
+        corr = result.corr()
+        g = sns.clustermap(corr, cmap='coolwarm', linewidths=.5)
+        st.pyplot(g)
+
+
+    def plot_error_bar(result):
+        st.subheader("Error Bar Plot of Mean Performance Metrics")
+        result.drop(['RRMSE'] , axis=1  , inplace=True)
+        mean_metrics = result.mean()
+        std_metrics = result.std()
+        fig, ax = plt.subplots(figsize=(10, 6))
+        ax.errorbar(mean_metrics.index, mean_metrics, yerr=std_metrics, fmt='o', capsize=5)
+        ax.set_xlabel('Metrics')
+        ax.set_ylabel('Metric Values')
+        ax.set_title('Mean Performance Metrics with Error Bars')
+        ax.grid(True)
+        st.pyplot(fig)
+
+
+    def plot_scatter_matrix_regression(result):
+        st.subheader("Scatter Plot Matrix with Regression Fits")
+        fig = sns.pairplot(result, kind="reg", plot_kws={'line_kws': {'color': 'red'}})
+        st.pyplot(fig)
+
 
     # Choose the plot based on the user's selection
     if visualization_choice == "Q-Q Plot":
@@ -271,6 +366,40 @@ if result_file is not None or prediction_file is not None:
         if prediction is not None:
             plot_r2_polar_plot(prediction)
 
+    elif visualization_choice == "R2 Polar Plot":
+        if prediction is not None:
+            plot_r2_polar_plot(prediction)
+
+    elif visualization_choice == "Pairplot with Hue":
+        if result is not None:
+            plot_pairplot(result)
+
+    elif visualization_choice == "Distribution Plot for Each Metric":
+        if result is not None:
+            plot_distplot(result)
+
+    elif visualization_choice == "Jointplot of Model Predictions vs. Original Values":
+        if prediction is not None:
+            plot_jointplot(prediction)
+
+    elif visualization_choice == "Density Contour Plot of Two Metrics":
+        if result is not None and len(result.columns) >= 2:
+            plot_density_contour(result)
+
+    elif visualization_choice == "3D Scatter Plot of Three Metrics":
+        if result is not None and len(result.columns) >= 3:
+            plot_3d_scatter(result)
+
+    elif visualization_choice == "Histogram with Marginal KDE":
+        plot_histogram_kde(result)
+    elif visualization_choice == "PairGrid with Regression Fits":
+        plot_pairgrid(result)
+    elif visualization_choice == "Clustermap for Metric Correlation":
+        plot_clustermap(result)
+    elif visualization_choice == "Error Bar Plot of Mean Performance Metrics":
+        plot_error_bar(result)
+    elif visualization_choice == "Scatter Plot Matrix with Regression Fits":
+        plot_scatter_matrix_regression(result)
 
 else:
     st.warning("Please upload both Result and Prediction files.")
