@@ -120,17 +120,15 @@ if result_file is not None or prediction_file is not None:
         ax.set_title('Radar Plot of Performance Metrics' , weight='bold')
         ax.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1))
         st.pyplot(fig)
-##########################################################################################################
+
     def plot_parallel_coordinates(result):
         st.subheader("Parallel Coordinates Plot of Model Comparison")
         fig, ax = plt.subplots(figsize=(10, 6))
-        result.drop(['RRMSE'] , axis=1  , inplace=True)
-
         reversed_models = result.index[::-1]
         pd.plotting.parallel_coordinates(result.loc[reversed_models].reset_index(), ' Models', colormap='viridis', ax=ax)
         ax.set_xlabel('Metrics')
         ax.set_ylabel('Metric Values')
-        ax.set_title('Parallel Coordinates Plot of Model Comparison' , weight='bold')
+        ax.set_title('Parallel Coordinates Plot of Model Comparison')
         ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
         ax.legend(loc='center left', bbox_to_anchor=(1.0, 0.9), title='Models', fontsize=8)
         st.pyplot(fig)
@@ -293,22 +291,21 @@ if result_file is not None or prediction_file is not None:
 
 
     def plot_jointplot(prediction):
-    st.subheader("Jointplot of Model Predictions vs. Original Values")
+        st.subheader("Jointplot of Model Predictions vs. Original Values")
 
-    fig = sns.jointplot(x='Original', y=prediction.columns[1], data=prediction, kind='reg', height=8)
+        fig = sns.jointplot(x='Original', y=prediction.columns[1], data=prediction, kind='reg', height=8)
 
-    font = {'weight': 'bold'}
+        font = {'weight': 'bold'}
 
-    fig.ax_joint.set_xlabel('Original Values', fontdict=font)
-    fig.ax_joint.set_ylabel('Predicted Values', fontdict=font)
-    fig.fig.suptitle("Jointplot of Model Predictions vs. Original Values", fontdict=font)
+        fig.ax_joint.set_xlabel('Original Values', fontdict=font)
+        fig.ax_joint.set_ylabel('Predicted Values', fontdict=font)
+        fig.fig.suptitle("Jointplot of Model Predictions vs. Original Values", fontdict=font)
 
-    # Adjust layout to prevent overlap
-    fig.fig.tight_layout()
-    fig.fig.subplots_adjust(top=0.95)
+        fig.fig.tight_layout()
+        fig.fig.subplots_adjust(top=0.95)
 
-    # Render the plot in Streamlit
-    st.pyplot(fig.fig)
+        st.pyplot(fig)
+
 
     def plot_density_contour(result):
         st.subheader("Density Contour Plot of Two Metrics")
