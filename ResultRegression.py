@@ -120,10 +120,12 @@ if result_file is not None or prediction_file is not None:
         ax.set_title('Radar Plot of Performance Metrics' , weight='bold')
         ax.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1))
         st.pyplot(fig)
-
+##########################################################################################################
     def plot_parallel_coordinates(result):
         st.subheader("Parallel Coordinates Plot of Model Comparison")
         fig, ax = plt.subplots(figsize=(10, 6))
+        result.drop(['RRMSE'] , axis=1  , inplace=True)
+
         reversed_models = result.index[::-1]
         pd.plotting.parallel_coordinates(result.loc[reversed_models].reset_index(), ' Models', colormap='viridis', ax=ax)
         ax.set_xlabel('Metrics')
