@@ -295,7 +295,7 @@ if result_file is not None or prediction_file is not None:
     
         fig = sns.jointplot(x='Original', y=prediction.columns[1], data=prediction, kind='reg', height=8)
     
-        font = {'weight': 'bold'}
+        font = {'fontweight': 'bold'}  # Use only 'fontweight' instead of 'weight'
     
         fig.ax_joint.set_xlabel('Original Values', fontdict=font)
         fig.ax_joint.set_ylabel('Predicted Values', fontdict=font)
