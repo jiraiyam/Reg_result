@@ -130,7 +130,7 @@ if result_file is not None or prediction_file is not None:
         pd.plotting.parallel_coordinates(result.loc[reversed_models].reset_index(), ' Models', colormap='viridis', ax=ax)
         ax.set_xlabel('Metrics')
         ax.set_ylabel('Metric Values')
-        ax.set_title('Parallel Coordinates Plot of Model Comparison')
+        ax.set_title('Parallel Coordinates Plot of Model Comparison' , weight='bold')
         ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
         ax.legend(loc='center left', bbox_to_anchor=(1.0, 0.9), title='Models', fontsize=8)
         st.pyplot(fig)
