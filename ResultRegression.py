@@ -290,21 +290,30 @@ if result_file is not None or prediction_file is not None:
         st.pyplot(fig)
 
 
-    def plot_jointplot(prediction):
-        st.subheader("Jointplot of Model Predictions vs. Original Values")
-    
-        fig = sns.jointplot(x='Original', y=prediction.columns[1], data=prediction, kind='reg', height=8)
-    
-        font = {'fontweight': 'bold'}  # Use only 'fontweight' instead of 'weight'
-    
-        fig.ax_joint.set_xlabel('Original Values', fontdict=font)
-        fig.ax_joint.set_ylabel('Predicted Values', fontdict=font)
-        fig.fig.suptitle("Jointplot of Model Predictions vs. Original Values", fontdict=font, y=1.02)
-    
-        fig.tight_layout()  # Call tight_layout on the figure object
-        fig.fig.subplots_adjust(top=0.95)
-    
-        st.pyplot(fig)
+   def plot_jointplot(prediction):
+    st.subheader("Jointplot of Model Predictions vs. Original Values")
+
+    # Create the jointplot
+    fig = sns.jointplot(x='Original', y=prediction.columns[1], data=prediction, kind='reg', height=8)
+
+    # Define the font dictionary
+    font = {'fontweight': 'bold'}
+
+    # Set labels
+    fig.ax_joint.set_xlabel('Original Values', fontdict=font)
+    fig.ax_joint.set_ylabel('Predicted Values', fontdict=font)
+    fig.fig.suptitle("Jointplot of Model Predictions vs. Original Values", fontdict=font, y=1.02)
+
+    # Adjust layout
+    fig.fig.tight_layout()  # Call tight_layout on the figure object
+    fig.fig.subplots_adjust(top=0.95)
+
+    # Display plot in Streamlit
+    st.pyplot(fig.fig)
+
+# Now you can call the function with your data
+# plot_jointplot(prediction)
+
 
 
     def plot_density_contour(result):
